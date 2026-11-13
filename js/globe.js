@@ -73,8 +73,9 @@ export function createGlobe(canvas, { host = canvas, grab = null, rtl = false, l
   let w = 0, h = 0, dpr = 1, cx = 0, cy = 0, R = 1;
   let yaw = -HUB.lon * DEG - 0.25, tilt = 0.36;      // start with the hub facing the viewer
   let vYaw = 0, vTilt = 0, dragging = false, lastX = 0, lastY = 0, lastMove = 0;
-  const target = { scroll: 0, mx: 0.5, my: 0.5 }, cur = { scroll: 0, mx: 0.5, my: 0.5 };
+  const target = { scroll: 0, mx: 0.5, my: 0.5, on: animate ? 0 : 1 }, cur = { scroll: 0, mx: 0.5, my: 0.5, on: animate ? 0 : 1 };
   let raf = 0, visible = true, alive = true, last = performance.now(), grabKey = '';
+  let revealAt = animate ? 0 : -1;                 // 0 = waiting, -1 = shown at once, else the start time
 
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -85,7 +86,7 @@ export function createGlobe(canvas, { host = canvas, grab = null, rtl = false, l
   function layout() {
     const narrow = w < 820;
     R = narrow ? Math.min(w * 0.62, h * 0.36) : Math.min(w * 0.33, h * 0.47);
-    R *= 1 + cur.scroll * 0.14;
+    R *= (1 + cur.scroll * 0.14) * (0.84 + 0.16 * (1 - Math.pow(1 - cur.on, 3)));
     cx = narrow ? w * 0.5 : w * (rtl ? 0.27 : 0.73);
     cy = (narrow ? h * 0.33 : h * 0.47) - cur.scroll * h * 0.1;
     if (grab) {
@@ -107,6 +108,8 @@ export function createGlobe(canvas, { host = canvas, grab = null, rtl = false, l
     cur.scroll += (target.scroll - cur.scroll) * 0.1;
     cur.mx += (target.mx - cur.mx) * 0.05;
     cur.my += (target.my - cur.my) * 0.05;
+    // set({ on: 1 }) brings the globe in over a fixed time, whatever the frame rate
+    cur.on = revealAt < 0 ? 1 : revealAt ? Math.min(1, (now - revealAt) / 2400) : 0;
     if (!dragging) {
       // vYaw / vTilt are in radians per second and die away after a release.
       yaw += (vYaw + (animate ? 0.055 : 0)) * dt;
@@ -135,6 +138,9 @@ export function createGlobe(canvas, { host = canvas, grab = null, rtl = false, l
       ctx.fillStyle = `rgba(${BONE},${(s.a * (0.7 + 0.3 * Math.sin(time * 0.8 + s.ph))).toFixed(3)})`;
       ctx.fillRect(s.x * w, s.y * h, s.s, s.s);
     }
+
+    const A = 0.1 + 0.9 * cur.on;
+    ctx.globalAlpha = A;
 
     // Orbit rings: back halves first, front halves after the globe.
     const rings = [{ r: 1.2, tx: 1.22, tz: -0.42, sp: 0.05 }, { r: 1.34, tx: 1.36, tz: 0.5, sp: -0.035 }];
@@ -193,6 +199,9 @@ export function createGlobe(canvas, { host = canvas, grab = null, rtl = false, l
       ctx.fill();
     });
 
+    // Routes and labels arrive after the globe itself
+    ctx.globalAlpha = A * Math.max(0, Math.min(1, (cur.on - 0.6) / 0.3));
+
     // Route arcs with a pulse travelling along each one
     ctx.lineCap = 'round';
     for (const arc of arcs) {
@@ -244,6 +253,7 @@ export function createGlobe(canvas, { host = canvas, grab = null, rtl = false, l
     places.forEach((p) => mark(p.v, p[lang] || p.en, false));
     mark(hub, HUB[lang] || HUB.en, true);
 
+    ctx.globalAlpha = A;
     rings.forEach((r) => ringPath(r, true));
 
     // Crisp edge on the lit side
@@ -251,8 +261,9 @@ export function createGlobe(canvas, { host = canvas, grab = null, rtl = false, l
     edge.addColorStop(0, 'rgba(255,214,178,0.9)'); edge.addColorStop(0.5, `rgba(${ACCENT},0.35)`); edge.addColorStop(1, 'rgba(120,20,0,0.15)');
     ctx.strokeStyle = edge; ctx.lineWidth = 1.2;
     ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.stroke();
+    ctx.globalAlpha = 1;
 
-    const settling = Math.abs(vYaw) + Math.abs(vTilt) > 0.003 || Math.abs(tilt - 0.36) > 0.003 || Math.abs(target.scroll - cur.scroll) > 0.001;
+    const settling = Math.abs(vYaw) + Math.abs(vTilt) > 0.003 || Math.abs(tilt - 0.36) > 0.003 || Math.abs(target.scroll - cur.scroll) > 0.001 || (revealAt > 0 && cur.on < 1);
     if (visible && (animate || dragging || settling)) raf = requestAnimationFrame(frame);
   }
   const kick = () => { if (!raf && alive) { last = performance.now(); raf = requestAnimationFrame(frame); } };
@@ -300,7 +311,11 @@ export function createGlobe(canvas, { host = canvas, grab = null, rtl = false, l
   kick();
 
   return {
-    set(v) { Object.assign(target, v); kick(); },
+    set(v) {
+      if (v.on && !revealAt) revealAt = performance.now();
+      Object.assign(target, v);
+      kick();
+    },
     destroy() {
       alive = false;
       cancelAnimationFrame(raf);

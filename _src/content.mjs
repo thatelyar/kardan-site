@@ -28,17 +28,18 @@ export const ui = {
   hint: L('نشانگر را روی لوگو حرکت دهید', 'Move the pointer across the wordmark'),
   formNote: L('این فرم هنوز به سرور متصل نیست و چیزی ارسال نشد.', 'This form is not connected to a server yet, so nothing was sent.'),
   home: L('خانه', 'Home'),
+  vizCap: L('از پیچیدگی به شفافیت', 'From complexity to clarity'),
 };
 
 export const domains = [
-  { art: 'customs', name: L('دارو و مواد اولیه دارویی', 'Pharmaceuticals and pharmaceutical raw materials'), desc: L('پروژه‌هایی که دقت، انطباق با مقررات و زمان‌بندی در آن‌ها اهمیت حیاتی دارد.', 'Projects where precision, regulatory compliance and timing are critical.') },
-  { art: 'air', name: L('تلفن همراه و تجهیزات ارتباطی', 'Mobile phones and communication equipment'), desc: L('بازاری با تغییرات سریع، ارزش بالا و حساسیت زیاد نسبت به زمان.', 'A market of rapid change, high value and great sensitivity to time.') },
-  { art: 'road', name: L('خودروهای سواری و تجاری', 'Passenger and commercial vehicles'), desc: L('پروژه‌هایی با الزامات قانونی، استانداردها و تصمیم‌های چندلایه.', 'Projects with legal requirements, standards and multi-layered decisions.') },
-  { art: 'boxes', name: L('کالای دیجیتال و تجهیزات فناوری', 'Digital goods and technology equipment'), desc: L('محصولاتی که سرعت تغییر بازار، بخش مهمی از تصمیم‌گیری را تشکیل می‌دهد.', 'Products where the pace of market change is a major part of the decision.') },
-  { art: 'rail', name: L('ماشین‌آلات و تجهیزات صنعتی', 'Industrial machinery and equipment'), desc: L('پروژه‌هایی که هر تصمیم آن‌ها مستقیماً بر تولید و سرمایه‌گذاری اثر می‌گذارد.', 'Projects where every decision directly affects production and investment.') },
-  { art: 'contour', name: L('مواد اولیه صنعتی', 'Industrial raw materials'), desc: L('حفظ پایداری زنجیره تأمین، مهم‌ترین عامل موفقیت این پروژه‌هاست.', 'Keeping the supply chain stable is the most important factor in the success of these projects.') },
-  { art: 'ocean', name: L('محصولات پتروشیمی', 'Petrochemical products'), desc: L('بازاری با وابستگی بالا به استانداردها، بازار جهانی و مدیریت ریسک.', 'A market highly dependent on standards, the global market and risk management.') },
-  { art: 'customs', name: L('تجهیزات پزشکی', 'Medical equipment'), desc: L('پروژه‌هایی که دقت، انطباق و مسئولیت‌پذیری، نقش تعیین‌کننده دارند.', 'Projects where precision, compliance and accountability play a decisive role.') },
+  { ico: 'molecule', art: 'customs', name: L('دارو و مواد اولیه دارویی', 'Pharmaceuticals and pharmaceutical raw materials'), desc: L('پروژه‌هایی که دقت، انطباق با مقررات و زمان‌بندی در آن‌ها اهمیت حیاتی دارد.', 'Projects where precision, regulatory compliance and timing are critical.') },
+  { ico: 'signal', art: 'air', name: L('تلفن همراه و تجهیزات ارتباطی', 'Mobile phones and communication equipment'), desc: L('بازاری با تغییرات سریع، ارزش بالا و حساسیت زیاد نسبت به زمان.', 'A market of rapid change, high value and great sensitivity to time.') },
+  { ico: 'car', art: 'road', name: L('خودروهای سواری و تجاری', 'Passenger and commercial vehicles'), desc: L('پروژه‌هایی با الزامات قانونی، استانداردها و تصمیم‌های چندلایه.', 'Projects with legal requirements, standards and multi-layered decisions.') },
+  { ico: 'circuit', art: 'boxes', name: L('کالای دیجیتال و تجهیزات فناوری', 'Digital goods and technology equipment'), desc: L('محصولاتی که سرعت تغییر بازار، بخش مهمی از تصمیم‌گیری را تشکیل می‌دهد.', 'Products where the pace of market change is a major part of the decision.') },
+  { ico: 'gear', art: 'rail', name: L('ماشین‌آلات و تجهیزات صنعتی', 'Industrial machinery and equipment'), desc: L('پروژه‌هایی که هر تصمیم آن‌ها مستقیماً بر تولید و سرمایه‌گذاری اثر می‌گذارد.', 'Projects where every decision directly affects production and investment.') },
+  { ico: 'crystal', art: 'contour', name: L('مواد اولیه صنعتی', 'Industrial raw materials'), desc: L('حفظ پایداری زنجیره تأمین، مهم‌ترین عامل موفقیت این پروژه‌هاست.', 'Keeping the supply chain stable is the most important factor in the success of these projects.') },
+  { ico: 'lattice', art: 'ocean', name: L('محصولات پتروشیمی', 'Petrochemical products'), desc: L('بازاری با وابستگی بالا به استانداردها، بازار جهانی و مدیریت ریسک.', 'A market highly dependent on standards, the global market and risk management.') },
+  { ico: 'health', art: 'customs', name: L('تجهیزات پزشکی', 'Medical equipment'), desc: L('پروژه‌هایی که دقت، انطباق و مسئولیت‌پذیری، نقش تعیین‌کننده دارند.', 'Projects where precision, compliance and accountability play a decisive role.') },
 ];
 
 export const categories = [
@@ -81,10 +82,10 @@ export const home = {
       'Most foreign-trade projects run into trouble not because of weak execution, but because of wrong decisions made in the early stages. That is why, before any proposal, we first try to understand the project’s conditions, goals, constraints, risks and possible routes. When the problem is properly understood, the choice of route becomes more informed too.',
     ),
     cards: [
-      { t: L('شناخت شرایط پروژه', 'Understanding the project'), d: L('پیش از هر تصمیم، باید تصویر دقیقی از شرایط پروژه شکل بگیرد.', 'Before any decision, an accurate picture of the project’s conditions has to take shape.') },
-      { t: L('شناسایی ریسک‌ها', 'Identifying the risks'), d: L('تمام مسیرها یکسان نیستند. پیش از انتخاب، باید ریسک‌های پنهان شناسایی شوند.', 'Not every route is the same. Hidden risks have to be identified before a choice is made.') },
-      { t: L('بررسی مسیرهای ممکن', 'Examining the possible routes'), d: L('همیشه تنها یک راه وجود ندارد. مسیرها باید با شرایط پروژه مقایسه شوند.', 'There is not always only one way. Routes have to be compared against the project’s conditions.') },
-      { t: L('تصمیم‌گیری آگاهانه‌تر', 'A more informed decision'), d: L('پس از شناخت، تحلیل و مقایسه، مناسب‌ترین مسیر انتخاب می‌شود.', 'After understanding, analysis and comparison, the most suitable route is chosen.') },
+      { ico: 'focus', t: L('شناخت شرایط پروژه', 'Understanding the project'), d: L('پیش از هر تصمیم، باید تصویر دقیقی از شرایط پروژه شکل بگیرد.', 'Before any decision, an accurate picture of the project’s conditions has to take shape.') },
+      { ico: 'shield', t: L('شناسایی ریسک‌ها', 'Identifying the risks'), d: L('تمام مسیرها یکسان نیستند. پیش از انتخاب، باید ریسک‌های پنهان شناسایی شوند.', 'Not every route is the same. Hidden risks have to be identified before a choice is made.') },
+      { ico: 'routes', t: L('بررسی مسیرهای ممکن', 'Examining the possible routes'), d: L('همیشه تنها یک راه وجود ندارد. مسیرها باید با شرایط پروژه مقایسه شوند.', 'There is not always only one way. Routes have to be compared against the project’s conditions.') },
+      { ico: 'node', t: L('تصمیم‌گیری آگاهانه‌تر', 'A more informed decision'), d: L('پس از شناخت، تحلیل و مقایسه، مناسب‌ترین مسیر انتخاب می‌شود.', 'After understanding, analysis and comparison, the most suitable route is chosen.') },
     ],
   },
   domains: {
@@ -147,10 +148,10 @@ export const home = {
     lines: L(['ارتباط با', '[[کاردان]]'], ['Contact', '[[Kardan]]']),
     lead: L('هر پروژه شرایط، ابهامات و اهداف متفاوتی دارد. برای آغاز گفت‌وگو، مسیر مناسب ارتباط را انتخاب کنید.', 'Every project has different conditions, uncertainties and goals. To begin the conversation, choose the channel that suits you.'),
     cards: [
-      { t: L('تماس تلفنی', 'Phone call'), d: L('برای گفتگوهای فوری و هماهنگی اولیه.', 'For urgent conversations and initial coordination.') },
-      { t: L('واتساپ', 'WhatsApp'), d: L('برای ارسال مدارک، تصاویر و ادامه ارتباط.', 'For sending documents and images, and for keeping in touch.') },
-      { t: L('پست الکترونیکی', 'Email'), d: L('برای مکاتبات رسمی، اسناد و درخواست‌های تفصیلی.', 'For formal correspondence, documents and detailed requests.') },
-      { t: L('فرم ارتباط', 'Contact form'), d: L('برای پروژه‌هایی که نیاز به توضیح بیشتری دارند.', 'For projects that need a fuller explanation.') },
+      { ico: 'phone', t: L('تماس تلفنی', 'Phone call'), d: L('برای گفتگوهای فوری و هماهنگی اولیه.', 'For urgent conversations and initial coordination.') },
+      { ico: 'chat', t: L('واتساپ', 'WhatsApp'), d: L('برای ارسال مدارک، تصاویر و ادامه ارتباط.', 'For sending documents and images, and for keeping in touch.') },
+      { ico: 'mail', t: L('پست الکترونیکی', 'Email'), d: L('برای مکاتبات رسمی، اسناد و درخواست‌های تفصیلی.', 'For formal correspondence, documents and detailed requests.') },
+      { ico: 'form', t: L('فرم ارتباط', 'Contact form'), d: L('برای پروژه‌هایی که نیاز به توضیح بیشتری دارند.', 'For projects that need a fuller explanation.') },
     ],
   },
 };

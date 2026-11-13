@@ -5,6 +5,7 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as C from './content.mjs';
+import { icon } from './icons.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
@@ -47,17 +48,17 @@ function page(lang) {
 
   const cells = (items, cls = '') => `
     <section class="stats ${cls}">
-      ${items.map((it, i) => `<div class="stat" data-reveal="fade"><span class="mono muted">${num(i + 1)}</span><h3 class="h3">${esc(t(it.t ?? it))}</h3>${it.d ? `<p>${esc(t(it.d))}</p>` : ''}</div>`).join('\n      ')}
+      ${items.map((it, i) => `<div class="stat" data-reveal="fade">${it.ico ? icon(it.ico) : ''}<span class="mono muted">${num(i + 1)}</span><h3 class="h3">${esc(t(it.t ?? it))}</h3>${it.d ? `<p>${esc(t(it.d))}</p>` : ''}</div>`).join('\n      ')}
     </section>`;
 
   const ARTS = ['contour', 'air', 'road', 'customs', 'boxes', 'rail', 'ocean'];
   const rows = (items, { href = '', foot = '', compact = true, preview = true } = {}) => `
-    <section class="ind ${compact ? 'ind--compact' : ''}">
+    <section class="ind ${compact ? 'ind--compact' : ''} ${items.some((it) => it.ico) ? 'ind--ico' : ''}">
       <div class="ind__list">
         ${items.map((it, i) => {
           const el = href ? 'a' : 'div';
           const art = it.art || ARTS[i % ARTS.length];
-          return `<${el} class="ind__row"${href ? ` href="${href}"` : ''} data-art="${art}"><span class="mono muted">${num(i + 1)}</span><span class="ind__name">${esc(t(it.name ?? it))}</span>${it.desc ? `<span class="ind__desc">${esc(t(it.desc))}</span>` : '<span></span>'}</${el}>`;
+          return `<${el} class="ind__row"${href ? ` href="${href}"` : ''} data-art="${art}"><span class="ind__lead"><span class="mono muted">${num(i + 1)}</span>${it.ico ? icon(it.ico) : ''}</span><span class="ind__name">${esc(t(it.name ?? it))}</span>${it.desc ? `<span class="ind__desc">${esc(t(it.desc))}</span>` : '<span></span>'}</${el}>`;
         }).join('\n        ')}
       </div>
       ${foot}
@@ -78,6 +79,7 @@ function page(lang) {
 
   const cta = (n, label, heading, button, href = 'contact.html', headingClass = 'display') => `
     <section class="cta">
+      <canvas class="cta__fx" data-fx="radiate"></canvas>
       <p class="mono muted" data-reveal="fade">${tag(n, label)}</p>
       <h2 class="${headingClass}" data-reveal="lines">
           ${lines(heading)}
@@ -114,6 +116,10 @@ function page(lang) {
     </section>
 ${statement(1, H.talk.label, H.talk.statement, H.talk.more)}
 ${cells(H.talk.cards)}
+    <section class="viz" data-reveal="media">
+      <canvas data-fx="converge"></canvas>
+      <p class="viz__cap mono">${esc(t(C.ui.vizCap))}</p>
+    </section>
 ${shead(2, H.domains.label, H.domains.lines, H.domains.lead, H.domains.intro)}
 ${rows(C.domains, { href: 'domains.html', foot: `<div class="ind__foot" data-reveal="fade"><p class="h3">${esc(t(H.domains.foot))}</p>${btn(H.domains.button, 'contact.html')}</div>` })}
 
@@ -166,6 +172,7 @@ ${rows(C.articles.map((a) => ({ name: a.title, desc: a.cat })), { href: 'insight
 ${shead(7, H.contact.label, H.contact.lines, H.contact.lead)}
 ${cells(H.contact.cards)}
     <section class="cta">
+      <canvas class="cta__fx" data-fx="radiate"></canvas>
       <p class="cta__q" data-words>${esc(t(C.question))}</p>
       <div data-reveal="fade">${btn(C.ui.start, 'contact.html', 'btn--solid')}</div>
     </section>`;
@@ -185,6 +192,7 @@ ${statement(1, D.eyebrow, C.home.domains.intro)}
       ${C.domains.map((d, i) => `<article class="svc__row">
         <div class="media" data-art="${d.art}" data-reveal="media"><span class="media__tag mono">${num(i + 1)}</span><div class="media__in"></div></div>
         <div class="svc__body">
+          ${icon(d.ico)}
           <h2 class="h2 h2--sm" data-reveal="fade">${esc(t(d.name))}</h2>
           <p data-reveal="fade">${esc(t(d.desc))}</p>
         </div>
@@ -216,6 +224,7 @@ ${rows(C.articles.map((a) => ({ name: a.title, desc: a.cat })), { preview: false
 ${shead(3, I.principles.label, L2(['اصول', '[[تولید محتوا]]'], ['Editorial', '[[principles]]']))}
 ${cells(I.principles.items, 'stats--3')}
     <section class="cta">
+      <canvas class="cta__fx" data-fx="radiate"></canvas>
       <p class="cta__q" data-words>${esc(t(I.subscribe.text))}</p>
       <div data-reveal="fade">${btn(I.subscribe.button, 'contact.html', 'btn--solid')}</div>
     </section>`;
@@ -286,6 +295,8 @@ ${cells(I.principles.items, 'stats--3')}
   </div>
   <div class="transition" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><div class="transition__label"><span></span></div></div>
   <div class="cursor" aria-hidden="true"><div class="cursor__ring"><span class="cursor__label"></span></div><div class="cursor__dot"></div></div>
+  <div class="progress" aria-hidden="true"><i></i></div>
+  <div class="grain" aria-hidden="true"></div>
 
   <header class="nav">
     <a class="nav__logo" href="index.html" data-magnetic aria-label="${esc(t(C.brand))} — ${esc(t(C.ui.home))}"><img class="nav__mark" src="${base}img/kardan-mark.svg" alt=""><img class="nav__word" src="${base}img/kardan-word.svg" alt="Kardan"></a>

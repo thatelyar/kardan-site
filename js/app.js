@@ -2,6 +2,7 @@ import { createGlobe } from './globe.js';
 import { createStack } from './stack.js';
 import { createWordmark } from './wordmark.js';
 import { paintArt } from './art.js';
+import { createNetwork } from './network.js';
 
 const { gsap, ScrollTrigger } = window;
 gsap.registerPlugin(ScrollTrigger);
@@ -53,11 +54,12 @@ function initCursor() {
 }
 
 function initNav() {
-  const nav = $('.nav'), toggle = $('.nav__toggle');
+  const nav = $('.nav'), toggle = $('.nav__toggle'), bar = $('.progress i');
   let last = 0;
   addEventListener('scroll', () => {
     const y = scrollY;
     nav.classList.toggle('nav--solid', y > 40);
+    if (bar) { const max = document.documentElement.scrollHeight - innerHeight; bar.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`; }
     nav.classList.toggle('nav--hidden', y > last && y > 320 && !root.classList.contains('menu-open'));
     last = y;
   }, { passive: true });
@@ -117,20 +119,46 @@ function setup(main) {
   const disposers = [];
   const onTick = (fn) => { gsap.ticker.add(fn); disposers.push(() => gsap.ticker.remove(fn)); };
 
-  // Placeholder artwork
-  const medias = $$('.media[data-art]', main).map((m, i) => {
+  // Generative artwork, repainted about 30 times a second while it is on screen
+  const arts = $$('.media[data-art]', main).map((m, i) => {
     const holder = $('.media__in', m);
     if (!holder || $('img', holder)) return null;
     const cv = document.createElement('canvas');
     holder.appendChild(cv);
-    return () => paintArt(cv, m.dataset.art, i + 1);
+    return { cv, type: m.dataset.art, seed: i + 1, on: false };
   }).filter(Boolean);
-  const paintAll = () => medias.forEach((f) => f());
+  const paintAll = () => arts.forEach((a) => paintArt(a.cv, a.type, a.seed, 0));
   paintAll();
+  const artIO = new IntersectionObserver((entries) => entries.forEach((e) => { const a = arts.find((x) => x.cv === e.target); if (a) a.on = e.isIntersecting; }), { rootMargin: '10%' });
+  arts.forEach((a) => artIO.observe(a.cv));
+  disposers.push(() => artIO.disconnect());
+  let artFrame = 0;
+  onTick((time) => { if (reduce || ++artFrame % 2) return; for (const a of arts) if (a.on) paintArt(a.cv, a.type, a.seed, time); });
   let rt = 0;
   const onResize = () => { clearTimeout(rt); rt = setTimeout(paintAll, 200); };
   addEventListener('resize', onResize);
   disposers.push(() => removeEventListener('resize', onResize));
+
+  // Light-path canvases (converging routes, radiating call-to-action backdrop)
+  $$('canvas[data-fx]', main).forEach((cv) => {
+    const fx = createNetwork(cv, { mode: cv.dataset.fx, rtl, animate: !reduce });
+    disposers.push(() => fx.destroy());
+  });
+
+  // Cards lean towards the pointer
+  if (fine && !reduce) {
+    $$('.card .media', main).forEach((el) => {
+      const move = (e) => {
+        const r = el.getBoundingClientRect();
+        const nx = (e.clientX - r.left) / r.width - 0.5, ny = (e.clientY - r.top) / r.height - 0.5;
+        gsap.to(el, { rotationY: nx * 9, rotationX: -ny * 9, transformPerspective: 900, duration: 0.5, ease: 'power3.out' });
+      };
+      const leave = () => gsap.to(el, { rotationY: 0, rotationX: 0, duration: 0.9, ease: 'elastic.out(1, 0.5)' });
+      el.addEventListener('pointermove', move);
+      el.addEventListener('pointerleave', leave);
+      disposers.push(() => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerleave', leave); gsap.killTweensOf(el); });
+    });
+  }
 
   // Split paragraphs into words for the scrubbed reveal
   $$('[data-words]', main).forEach((el) => {
@@ -158,6 +186,7 @@ function setup(main) {
     if (hero) {
       const scene = createGlobe($('.hero__globe', hero), { host: hero, grab: $('.hero__grab', hero), rtl, lang: root.lang || 'en', animate: !reduce });
       disposers.push(() => scene.destroy());
+      intro.add(() => scene.set({ on: 1 }), 0.05);          // the globe arrives with the headline
       const move = () => scene.set({ mx: pointer.x / innerWidth, my: pointer.y / innerHeight });
       addEventListener('pointermove', move, { passive: true });
       disposers.push(() => removeEventListener('pointermove', move));
@@ -224,6 +253,9 @@ function setup(main) {
     });
     $$('[data-reveal="fade"]', main).forEach((el) => {
       gsap.from(el, { opacity: 0, y: 34, duration: 1.1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 92%', once: true } });
+    });
+    $$('.ico', main).forEach((el) => {
+      ScrollTrigger.create({ trigger: el, start: 'top 92%', once: true, onEnter: () => el.classList.add('is-in') });
     });
     $$('[data-reveal="media"]', main).forEach((el) => {
       gsap.fromTo(el, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 85%', once: true } });
