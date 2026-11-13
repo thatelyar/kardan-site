@@ -156,6 +156,10 @@ ${rows(C.domains, { href: 'domains.html', foot: `<div class="ind__foot" data-rev
       </div>
       <div class="hscroll__bar"><i></i></div>
     </section>
+    <section class="viz viz--iso" data-reveal="media">
+      <canvas data-iso="crane"></canvas>
+      <p class="viz__cap mono">${esc(t(C.ui.isoCap))}</p>
+    </section>
 ${shead(5, H.cases.label, H.cases.lines, H.cases.lead)}
     <section class="case" id="cases">
       <div class="case__meta" data-reveal="fade">
@@ -179,7 +183,7 @@ ${cells(H.contact.cards)}
 
   const S = C.solutions;
   const solutions = `${phero(S)}
-    <div class="media strip" data-art="contour" data-reveal="media"><div class="media__in"></div></div>
+    <div class="media strip strip--iso" data-reveal="media"><canvas data-iso="spin"></canvas></div>
 ${shead(1, S.map.label, S.map.lines, S.map.lead)}
 ${rows(S.stages.map((s) => ({ name: s })))}
 ${statement(2, S.problem.label, S.problem.statement, S.problem.more)}
@@ -202,7 +206,7 @@ ${cta(2, C.ui.cta, D.cta.lines, C.home.domains.button, 'contact.html', 'display 
 
   const A = C.about;
   const about = `${phero(A)}
-    <div class="media strip" data-art="air" data-reveal="media"><div class="media__in"></div></div>
+    <div class="media strip strip--iso" data-reveal="media"><canvas data-iso="convoy"></canvas></div>
 ${statement(1, A.story.label, A.story.statement, A.story.more)}
 ${shead(2, A.philosophy.label, L2(['فلسفه', '[[کاردان]]'], ['Kardan’s', '[[philosophy]]']))}
 ${cells(A.philosophy.items, 'stats--3')}
@@ -216,7 +220,7 @@ ${cta(6, C.ui.cta, A.cta.lines, C.ui.start, 'contact.html', 'h2')}`;
 
   const I = C.insights;
   const insights = `${phero(I, true)}
-    <div class="media strip" data-art="ocean" data-reveal="media"><div class="media__in"></div></div>
+    <div class="media strip strip--iso" data-reveal="media"><canvas data-iso="sort"></canvas></div>
 ${shead(1, I.topics.label, I.topics.lines)}
 ${rows(C.categories.map((c) => ({ name: c })))}
 ${shead(2, I.selected.label, I.selected.lines)}

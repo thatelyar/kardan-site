@@ -3,6 +3,7 @@ import { createStack } from './stack.js';
 import { createWordmark } from './wordmark.js';
 import { paintArt } from './art.js';
 import { createNetwork } from './network.js';
+import { createIso } from './iso.js';
 
 const { gsap, ScrollTrigger } = window;
 gsap.registerPlugin(ScrollTrigger);
@@ -143,6 +144,12 @@ function setup(main) {
   $$('canvas[data-fx]', main).forEach((cv) => {
     const fx = createNetwork(cv, { mode: cv.dataset.fx, rtl, animate: !reduce });
     disposers.push(() => fx.destroy());
+  });
+
+  // Isometric and 3D container scenes
+  $$('canvas[data-iso]', main).forEach((cv) => {
+    const sc = createIso(cv, { scene: cv.dataset.iso, animate: !reduce });
+    disposers.push(() => sc.destroy());
   });
 
   // Cards lean towards the pointer

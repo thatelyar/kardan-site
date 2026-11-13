@@ -29,6 +29,7 @@ export const ui = {
   formNote: L('این فرم هنوز به سرور متصل نیست و چیزی ارسال نشد.', 'This form is not connected to a server yet, so nothing was sent.'),
   home: L('خانه', 'Home'),
   vizCap: L('از پیچیدگی به شفافیت', 'From complexity to clarity'),
+  isoCap: L('اجرای هماهنگ', 'Coordinated execution'),
 };
 
 export const domains = [
